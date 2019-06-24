@@ -8,7 +8,7 @@ pub mod graph {
         pub mod edge {
             use std::collections::HashMap;
 
-            #[derive(PartialEq, Debug)]
+            #[derive(Clone, PartialEq, Debug)]
             pub struct Edge {
                 from: String,
                 to: String,
