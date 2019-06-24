@@ -71,16 +71,9 @@ where
     pub fn rev(&self) -> SimpleLinkedList<T> {
         let mut linked_list = SimpleLinkedList::new();
         let mut n = self.head.as_ref();
-        loop {
-            match n {
-                Some(val) => {
-                    linked_list.push(val.data.clone());
-                    n = val.next.as_ref();
-                }
-                None => {
-                    break;
-                }
-            }
+        while let Some(val) = n {
+            linked_list.push(val.data.clone());
+            n = val.next.as_ref();
         }
         linked_list
     }
@@ -106,16 +99,9 @@ where
     fn into(self) -> Vec<T> {
         let mut vec: Vec<T> = Vec::new();
         let mut n = self.head;
-        loop {
-            match n {
-                Some(val) => {
-                    vec.insert(0, val.data);
-                    n = val.next;
-                }
-                None => {
-                    break;
-                }
-            }
+        while let Some(val) = n {
+            vec.insert(0, val.data);
+            n = val.next;
         }
         vec
     }
