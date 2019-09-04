@@ -4,7 +4,7 @@ static VALID_NUCLEOTIDES: &'static [char] = &['A', 'C', 'G', 'T'];
 
 pub fn count(nucleotide: char, dna: &str) -> Result<usize, char> {
     // Check for empty dna, if empty return Ok(0)
-    if dna.len() == 0 {
+    if dna.is_empty() {
         return Ok(0);
     }
     // If the nucleotide we need to look for is not a valid one, then we return the nucleotide as an Err variant of Result

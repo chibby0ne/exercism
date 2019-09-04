@@ -23,9 +23,5 @@ pub fn is_valid_isbn(isbn: &str) -> bool {
     }
     let mut sum: u32 = nums.enumerate().map(|(i, v)| v * (10 - i as u32)).sum();
     sum += add_ten_if_x(last);
-    if sum % 11 == 0 {
-        true
-    } else {
-        false
-    }
+    sum % 11 == 0
 }
