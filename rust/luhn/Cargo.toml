@@ -2,3 +2,10 @@
 edition = "2021"
 name = "luhn"
 version = "1.6.1"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
