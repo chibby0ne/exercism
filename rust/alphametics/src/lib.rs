@@ -24,19 +24,21 @@ fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u32 {
 fn convert_to_numbers_and_check_result(input: &Vec<&str>, result: &str, hashmap: &HashMap<char, u8>) -> bool {
     // Convert inputs to number
     let val: u32 = input.iter().map(|s| get_number_representation(s, &hashmap)).sum();
-    // println!("input: {:?} = {}", input, val);
-    // let mut input_as_numbers: Vec<u32> = Vec::with_capacity(input.len());
-    // let iter = input.iter();
-    // for (i, s) in iter.enumerate() {
-    //     input_as_numbers[i] = get_number_representation(s, &hashmap);
-    // }
     // Convert result to number
     let result_as_number = get_number_representation(&result, &hashmap);
-    // println!("result: {:?} = {}", result, result_as_number);
-
     val == result_as_number
+}
 
-    // input_as_numbers.iter().sum::<u32>() == result_as_number
+fn is_valid(map: &HashMap<char, u8>, inputs: &Vec<&str>, result: &str) -> bool {
+    for input in inputs {
+        if *map.get(&input.chars().nth(0).unwrap()).unwrap() == 0 {
+            return false;
+        }
+    }
+    if *map.get(&result.chars().nth(0).unwrap()).unwrap() == 0 {
+        return false;
+    }
+    true
 }
 
 #[derive(Debug)]
@@ -159,8 +161,7 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     let perm = Permutation::new(&set);
     // println!("perm: {:?}", perm);
     for hashmap in perm {
-        // println!("comparing with {:?}", hashmap);
-        if convert_to_numbers_and_check_result(&input, &result, &hashmap) {
+        if is_valid(&hashmap, &input, result) && convert_to_numbers_and_check_result(&input, &result, &hashmap) {
             return Some(hashmap);
         }
     }
