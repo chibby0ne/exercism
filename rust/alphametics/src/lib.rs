@@ -1,20 +1,21 @@
 use std::collections::{HashSet, HashMap};
 
 
-fn insert_char_if_not_seen(s: &str, hashmap: &mut HashSet<char>) {
+fn insert_char_if_not_seen(s: &str, set: &mut HashSet<char>) {
     for c in s.chars() {
-        if !hashmap.contains(&c) {
-            hashmap.insert(c);
-        }
+        set.insert(c);
     }
 }
 
+
 fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u32 {
-    let mut chars = s.chars().rev();
-    let mut number: u32 = *hashmap.get(&chars.next().unwrap()).unwrap() as u32;
+    let mut number: u32 = 0;
+    let chars = s.chars();
+    let mut pos = s.len();
     for c in chars {
-        number *= 10;
-        number += *hashmap.get(&c).unwrap() as u32;
+        let val = *hashmap.get(&c).unwrap() as u32;
+        number += val * 10_u32.pow(pos as u32);
+        pos -= 1;
     }
     number
 }
@@ -22,22 +23,27 @@ fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u32 {
 
 fn convert_to_numbers_and_check_result(input: &Vec<&str>, result: &str, hashmap: &HashMap<char, u8>) -> bool {
     // Convert inputs to number
-    let mut input_as_numbers: Vec<u32> = Vec::with_capacity(input.len());
-    let iter = input.iter();
-    for (i, s) in iter.enumerate() {
-        input_as_numbers[i] = get_number_representation(s, &hashmap);
-    }
+    let val: u32 = input.iter().map(|s| get_number_representation(s, &hashmap)).sum();
+    // println!("input: {:?} = {}", input, val);
+    // let mut input_as_numbers: Vec<u32> = Vec::with_capacity(input.len());
+    // let iter = input.iter();
+    // for (i, s) in iter.enumerate() {
+    //     input_as_numbers[i] = get_number_representation(s, &hashmap);
+    // }
     // Convert result to number
     let result_as_number = get_number_representation(&result, &hashmap);
+    // println!("result: {:?} = {}", result, result_as_number);
 
-    input_as_numbers.iter().sum::<u32>() == result_as_number
+    val == result_as_number
+
+    // input_as_numbers.iter().sum::<u32>() == result_as_number
 }
 
+#[derive(Debug)]
 struct Permutation {
     letters: Vec<char>,
     count: usize,
     max: usize,
-    current_map: HashMap<char, u8>,
     current_values: Vec<u8>,
 }
 
@@ -53,42 +59,46 @@ impl Permutation {
             result
         }
 
-        let mut m: HashMap<char, u8> = HashMap::new();
 
-        for k in s {
-            m.insert(*k, 0);
-        }
 
         Self {
             letters: s.iter().copied().collect(),
             count: 0,
             max: combinations(s.len()),
-            current_map: m,
-            current_values: vec![0; s.len()],
+            current_values: (0..s.len()).rev().map(|x| x as u8).collect(),
         }
     }
 
-    fn find_next_digit(self, index: u8, set: &HashSet<u8>) -> (bool, u8) {
+    fn find_next_combination(&mut self, index: usize) {
+        if index >= self.current_values.len() {
+            return;
+        }
 
+        // println!("beginning letters: {:?}, current_values: {:?}", self.letters, self.current_values);
+        let mut next_digit = (self.current_values[index] + 1) % 10;
+        // dbg!(&next_digit);
+        if next_digit == 0 {
+            self.find_next_combination(index + 1);
+        }
+
+        while self.current_values[index+1..].contains(&next_digit) {
+            next_digit = (next_digit + 1) % 10;
+            // dbg!(&next_digit);
+            if next_digit == 0 {
+                self.find_next_combination(index + 1);
+            }
+        }
+
+        self.current_values[index] = next_digit;
+        // println!("end letters: {:?}, current_values: {:?}", self.letters, self.current_values);
     }
 
 
-    fn permute(&mut self) -> HashMap<char, u8> {
-        let mut s: HashSet<u8> = self.current_values.iter().copied().collect();
-
-        // let mut stack: Vec<u8> = Vec::new();
-        // let mut i = 0;
-        // while i < self.current_values.len() {
-        //     let (rollover, next_digit) = self.find_next_digit(i as u8, &s);
-        //     if rollover == false {
-        //         self.current_values[i] = next_digit;
-        //         break;
-        //     }
-        //     stack.push(next_digit);
-        //     i += 1;
-        // }
+    fn next_hashmap(&mut self) -> HashMap<char, u8> {
+        self.find_next_combination(0);
         self.letters.iter().copied().zip(self.current_values.iter().copied()).collect()
     }
+
 }
 
 
@@ -96,12 +106,16 @@ impl Iterator for Permutation {
     type Item = HashMap<char, u8>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.count += 1;
+
 
         if self.count == self.max {
             None
+        } else if self.count == 0 {
+            self.count += 1;
+            Some(self.letters.iter().copied().zip(self.current_values.iter().copied()).collect())
         } else {
-            Some(self.permute())
+            self.count += 1;
+            Some(self.next_hashmap())
         }
 
     }
@@ -137,14 +151,15 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     insert_char_if_not_seen(result, &mut set);
 
 
-
     for s in &input {
         insert_char_if_not_seen(s, &mut set);
     }
 
     // We iterate over each kind of 
     let perm = Permutation::new(&set);
+    // println!("perm: {:?}", perm);
     for hashmap in perm {
+        // println!("comparing with {:?}", hashmap);
         if convert_to_numbers_and_check_result(&input, &result, &hashmap) {
             return Some(hashmap);
         }
