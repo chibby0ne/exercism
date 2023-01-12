@@ -21,21 +21,21 @@ fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u64 {
 }
 
 
-fn convert_to_numbers_and_check_result(input: &Vec<&str>, result: &str, hashmap: &HashMap<char, u8>) -> bool {
+fn convert_to_numbers_and_check_result(input: &[&str], result: &str, hashmap: &HashMap<char, u8>) -> bool {
     // Convert inputs to number
-    let val: u64 = input.iter().map(|s| get_number_representation(s, &hashmap)).sum();
+    let val: u64 = input.iter().map(|s| get_number_representation(s, hashmap)).sum();
     // Convert result to number
-    let result_as_number = get_number_representation(&result, &hashmap);
+    let result_as_number = get_number_representation(result, hashmap);
     val == result_as_number
 }
 
 fn is_valid(map: &HashMap<char, u8>, inputs: &Vec<&str>, result: &str) -> bool {
     for input in inputs {
-        if *map.get(&input.chars().nth(0).unwrap()).unwrap() == 0 {
+        if *map.get(&input.chars().next().unwrap()).unwrap() == 0 {
             return false;
         }
     }
-    if *map.get(&result.chars().nth(0).unwrap()).unwrap() == 0 {
+    if *map.get(&result.chars().next().unwrap()).unwrap() == 0 {
         return false;
     }
     true
@@ -76,23 +76,19 @@ impl Permutation {
             return;
         }
 
-        // println!("beginning letters: {:?}, current_values: {:?}", self.letters, self.current_values);
         let mut next_digit = (self.current_values[index] + 1) % 10;
-        // dbg!(&next_digit);
         if next_digit == 0 {
             self.find_next_combination(index + 1);
         }
 
         while self.current_values[index+1..].contains(&next_digit) {
             next_digit = (next_digit + 1) % 10;
-            // dbg!(&next_digit);
             if next_digit == 0 {
                 self.find_next_combination(index + 1);
             }
         }
 
         self.current_values[index] = next_digit;
-        // println!("end letters: {:?}, current_values: {:?}", self.letters, self.current_values);
     }
 
 
@@ -134,8 +130,8 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     // If any of the input or result is missing then there can be no solution and therefore we
     // return None
     // The input is split into a vector of &str since there could be > 1 inputs
-    let input: Vec<&str> = match input_and_result.get(0) {
-        Some(v) => v.split("+").map(|v| v.trim()).collect(),
+    let input: Vec<&str> = match input_and_result.first() {
+        Some(v) => v.split('+').map(|v| v.trim()).collect(),
         None => {
             return None;
         },
@@ -158,12 +154,6 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
     }
 
     // We iterate over each kind of 
-    let perm = Permutation::new(&set);
-    // println!("perm: {:?}", perm);
-    for hashmap in perm {
-        if is_valid(&hashmap, &input, result) && convert_to_numbers_and_check_result(&input, &result, &hashmap) {
-            return Some(hashmap);
-        }
-    }
-    None
+    let mut perm = Permutation::new(&set);
+    perm.find(|hashmap| is_valid(hashmap, &input, result) && convert_to_numbers_and_check_result(&input, result, hashmap))
 }
