@@ -8,13 +8,13 @@ fn insert_char_if_not_seen(s: &str, set: &mut HashSet<char>) {
 }
 
 
-fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u32 {
-    let mut number: u32 = 0;
+fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u64 {
+    let mut number: u64 = 0;
     let chars = s.chars();
     let mut pos = s.len();
     for c in chars {
-        let val = *hashmap.get(&c).unwrap() as u32;
-        number += val * 10_u32.pow(pos as u32);
+        let val = *hashmap.get(&c).unwrap() as u64;
+        number += val * 10_u64.pow(pos as u32);
         pos -= 1;
     }
     number
@@ -23,7 +23,7 @@ fn get_number_representation(s: &str, hashmap: &HashMap<char, u8>) -> u32 {
 
 fn convert_to_numbers_and_check_result(input: &Vec<&str>, result: &str, hashmap: &HashMap<char, u8>) -> bool {
     // Convert inputs to number
-    let val: u32 = input.iter().map(|s| get_number_representation(s, &hashmap)).sum();
+    let val: u64 = input.iter().map(|s| get_number_representation(s, &hashmap)).sum();
     // Convert result to number
     let result_as_number = get_number_representation(&result, &hashmap);
     val == result_as_number
