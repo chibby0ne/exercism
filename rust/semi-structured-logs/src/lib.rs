@@ -15,7 +15,6 @@ pub fn log(level: LogLevel, message: &str) -> String {
         LogLevel::Info => String::from("[INFO]: "),
         LogLevel::Warning => String::from("[WARNING]: "),
         LogLevel::Error => String::from("[ERROR]: "),
-
     };
     prefix.push_str(message);
     prefix
