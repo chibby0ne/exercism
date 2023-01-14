@@ -163,3 +163,21 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
             && convert_to_numbers_and_check_result(&input, result, hashmap)
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn permutation_test() {
+        let set: HashSet<char> = ['A', 'B'].iter().copied().collect();
+        let perm = Permutation::new(&set);
+
+
+        assert_eq!(perm.count, 0);
+        assert_eq!(perm.max, 10 * 9);
+        assert!(perm.letters.contains(&'A') && perm.letters.contains(&'B') && perm.letters.len() == 2);
+        assert_eq!(perm.current_values, vec![1, 0]);
+    }
+
+}
