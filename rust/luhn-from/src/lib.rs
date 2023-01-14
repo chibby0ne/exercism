@@ -49,12 +49,9 @@ impl<T: Display> From<T> for Luhn {
         // representation
         let mut s: String = input.to_string();
         s.retain(|c| !c.is_whitespace());
-        Self {
-            value: s,
-        }
+        Self { value: s }
     }
 }
-
 
 // /// Here is the example of how the From trait could be implemented
 // /// for the &str type. Naturally, you can implement this trait
