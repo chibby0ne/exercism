@@ -156,7 +156,14 @@ pub fn solve(input: &str) -> Option<HashMap<char, u8>> {
         insert_char_if_not_seen(s, &mut set);
     }
 
-    // We iterate over each kind of
+    // We find the hashmap that satisfies the constraint: it's valid (value of the leftmost letter
+    // isn't 0) and that it satisfies equation (result = sum of inputs) and wrap it in Some() or return None.
+    //
+    // To do so we create this Permutation struct that implements an iterator that creates every
+    // combination of hashmap<char, u8> by using a recursive algorithm and a counter to make sure
+    // we have gone through every possible combination.
+    //
+    // See the next() method implementation for more information.
     let mut perm = Permutation::new(&set);
     perm.find(|hashmap| {
         is_valid(hashmap, &input, result)
