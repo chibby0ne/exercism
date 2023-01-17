@@ -7,9 +7,7 @@ macro_rules! planet {
     ($name:ident, $factor:expr) => {
         pub struct $name;
         impl Planet for $name {
-            fn orbital_period() -> f64 {
-                $factor
-            }
+            const ORBITAL_PERIOD: f64 = $factor;
         }
     };
 }
@@ -19,18 +17,21 @@ pub struct Duration {
     years: f64,
 }
 
+const EARTH_YEAR_IN_SECONDS: f64 = 31557600.0;
+
 impl From<u64> for Duration {
     fn from(s: u64) -> Self {
         Self {
-            years: s as f64 / 31557600.0,
+            years: s as f64 / EARTH_YEAR_IN_SECONDS,
         }
     }
 }
 
 pub trait Planet {
-    fn orbital_period() -> f64;
+    const ORBITAL_PERIOD: f64;
+
     fn years_during(d: &Duration) -> f64 {
-        d.years / Self::orbital_period()
+        d.years / Self::ORBITAL_PERIOD
     }
 }
 
