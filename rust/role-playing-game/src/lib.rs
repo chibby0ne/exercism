@@ -2,6 +2,8 @@
 // to enable stricter warnings.
 #![allow(unused)]
 
+use std::cmp::min;
+
 pub struct Player {
     pub health: u32,
     pub mana: Option<u32>,
@@ -14,13 +16,9 @@ impl Player {
             // Only revive when health is 0, and set health to 100
             0 => {
                 // If the players level is >= 10 then set mana to 100, else set mana to None
-                let mut mana: Option<u32> = None;
-                if self.level >= 10 {
-                    mana = Some(100);
-                }
                 Some(Self {
                     health: 100,
-                    mana,
+                    mana: if self.level < 10 { None } else { Some(100) },
                     level: self.level,
                 })
             }
@@ -44,11 +42,7 @@ impl Player {
             None => {
                 // When no pool is available make as much damage to health as mana_cost and return 0 as damage inflicted
                 // Take care of substract with overflow
-                if self.health >= mana_cost {
-                    self.health -= mana_cost;
-                } else {
-                    self.health = 0;
-                }
+                self.health -= min(self.health, mana_cost);
                 0
             }
         }
