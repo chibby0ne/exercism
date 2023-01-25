@@ -19,7 +19,7 @@ pub fn can_construct_note(magazine: &[&str], note: &[&str]) -> bool {
                     return false;
                 }
             }
-            _ => return false,
+            None => return false,
         }
     }
     true
