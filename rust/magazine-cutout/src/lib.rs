@@ -15,7 +15,7 @@ pub fn can_construct_note(magazine: &[&str], note: &[&str]) -> bool {
         if *entry == 0 {
             return false;
         }
-        *entry += 1;
+        *entry -= 1;
     }
     true
 }
