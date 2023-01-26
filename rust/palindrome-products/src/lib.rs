@@ -7,12 +7,12 @@ use std::iter;
 pub struct Palindrome(u64);
 
 impl Palindrome {
-
     fn is_palindrome(value: u64) -> bool {
         let val_str = value.to_string();
-        let f = val_str.chars();
-        let r = val_str.chars().rev();
-        f.zip(r).all(|(ff, rr)| ff == rr)
+        val_str
+            .chars()
+            .zip(val_str.chars().rev())
+            .all(|(front, back)| front == back)
     }
 
     /// Create a `Palindrome` only if `value` is in fact a palindrome when represented in base ten. Otherwise, `None`.
@@ -31,12 +31,18 @@ impl Palindrome {
 }
 
 pub fn palindrome_products(min: u64, max: u64) -> Option<(Palindrome, Palindrome)> {
-    let products: Vec<u64> = (min..=max).flat_map(|v| iter::repeat(v).zip(min..=max).map(|(a, b)| a * b).collect::<Vec<u64>>()).collect();
-    let mut palindromes: Vec<Palindrome> = products.iter().filter_map(|&v| Palindrome::new(v)).collect();
+    let mut palindromes: Vec<Palindrome> = (min..=max)
+        .flat_map(|v| {
+            iter::repeat(v)
+                .zip(min..=max)
+                .map(|(a, b)| a * b)
+                .collect::<Vec<u64>>()
+        })
+        .filter_map(Palindrome::new)
+        .collect();
     palindromes.sort_unstable();
     match (palindromes.first(), palindromes.last()) {
         (Some(&min), Some(&max)) => Some((min, max)),
         _ => None,
     }
-
 }
