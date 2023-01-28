@@ -36,30 +36,23 @@ pub fn translate(input: &str) -> String {
     }
     for word in input.split_whitespace() {
         if is_rule_1(word) {
-            println!("case 1");
             res.push_str(word);
             res.push_str(PIG_LATIN_FRAGMENT);
         } else if is_rule_2(word) {
-            println!("case 2");
             let consonant_cluster = get_consonant_cluster(input);
             let start = consonant_cluster.len();
-            // format!("{}{}{}", &input[start..], &input[..start], PIG_LATIN_FRAGMENT);
             res.push_str(&word[start..]);
             res.push_str(&word[..start]);
             res.push_str(PIG_LATIN_FRAGMENT);
         } else if is_rule_3(word) {
-            println!("case 3");
             let consonant_cluster = get_consonant_cluster(input);
             let end = consonant_cluster.len() + 1;
-            // format!("{}{}{}", &input[end..], &input[..end], PIG_LATIN_FRAGMENT)
             res.push_str(&word[end..]);
             res.push_str(&word[..end]);
             res.push_str(PIG_LATIN_FRAGMENT);
         } else {
-            println!("case 4");
             let consonant_cluster = get_consonant_cluster(input);
             let start_y = consonant_cluster.find('y').unwrap();
-            // format!("{}{}{}", &input[start..], &input[..start], PIG_LATIN_FRAGMENT);
             res.push_str(&word[start_y..]);
             res.push_str(&word[..start_y]);
             res.push_str(PIG_LATIN_FRAGMENT);
