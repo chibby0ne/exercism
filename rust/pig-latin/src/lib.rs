@@ -8,9 +8,7 @@ fn get_consonant_cluster(input: &str) -> String {
 }
 
 fn is_rule_1(input: &str) -> bool {
-    get_consonant_cluster(input).is_empty()
-        | input.starts_with("xr")
-        | input.starts_with("yt")
+    get_consonant_cluster(input).is_empty() | input.starts_with("xr") | input.starts_with("yt")
 }
 
 fn is_rule_2(input: &str) -> bool {
@@ -44,9 +42,11 @@ pub fn translate(input: &str) -> String {
             res.push_str(&word[..start]);
         } else if is_rule_3(word) {
             let consonant_cluster = get_consonant_cluster(input);
-            let end = consonant_cluster.len() + 1;
-            res.push_str(&word[end..]);
-            res.push_str(&word[..end]);
+            // Need to add 1 more since this is the case with qu and that needs to also be moved to
+            // the back
+            let start = consonant_cluster.len() + 1;
+            res.push_str(&word[start..]);
+            res.push_str(&word[..start]);
         } else {
             let consonant_cluster = get_consonant_cluster(input);
             let start_y = consonant_cluster.find('y').unwrap();
