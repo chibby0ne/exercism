@@ -1,8 +1,4 @@
-const PIG_LATIN_FRAGMENT: &'static str = "ay";
-
-// fn starts_with_vowel(input: &str) -> bool {
-//     input.starts_with('a') | input.starts_with('e') | input.starts_with('i') | input.starts_with('o') | input.starts_with('u')
-// }
+const PIG_LATIN_FRAGMENT: &str = "ay";
 
 fn get_consonant_cluster(input: &str) -> String {
     input
@@ -22,7 +18,7 @@ fn is_rule_2(input: &str) -> bool {
     let cluster_length = &consonant_cluster.len();
     !consonant_cluster.is_empty()
         && input.get(cluster_length - 1..cluster_length + 1) != Some("qu")
-        && !consonant_cluster[1..].find('y').is_some()
+        && consonant_cluster[1..].find('y').is_none()
 }
 
 fn is_rule_3(input: &str) -> bool {
@@ -30,19 +26,7 @@ fn is_rule_3(input: &str) -> bool {
     let cluster_length = consonant_cluster.len();
     !consonant_cluster.is_empty()
         && input.get(cluster_length - 1..cluster_length + 1) == Some("qu")
-        && !consonant_cluster[1..].find('y').is_some()
-}
-
-fn is_rule_4(input: &str) -> bool {
-    let consonant_cluster = get_consonant_cluster(input);
-    let cluster_length = consonant_cluster.len();
-    !consonant_cluster.is_empty() && input.get(cluster_length..cluster_length + 1) == Some("y")
-}
-
-fn check_str_after_consonant_cluster(input: &str, s: &str) -> bool {
-    let consonant_cluster = get_consonant_cluster(input);
-    let cluster_length = consonant_cluster.len();
-    input.get(cluster_length..cluster_length + 1) == Some(s)
+        && consonant_cluster[1..].find('y').is_none()
 }
 
 pub fn translate(input: &str) -> String {
