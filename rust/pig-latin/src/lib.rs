@@ -37,26 +37,23 @@ pub fn translate(input: &str) -> String {
     for word in input.split_whitespace() {
         if is_rule_1(word) {
             res.push_str(word);
-            res.push_str(PIG_LATIN_FRAGMENT);
         } else if is_rule_2(word) {
             let consonant_cluster = get_consonant_cluster(input);
             let start = consonant_cluster.len();
             res.push_str(&word[start..]);
             res.push_str(&word[..start]);
-            res.push_str(PIG_LATIN_FRAGMENT);
         } else if is_rule_3(word) {
             let consonant_cluster = get_consonant_cluster(input);
             let end = consonant_cluster.len() + 1;
             res.push_str(&word[end..]);
             res.push_str(&word[..end]);
-            res.push_str(PIG_LATIN_FRAGMENT);
         } else {
             let consonant_cluster = get_consonant_cluster(input);
             let start_y = consonant_cluster.find('y').unwrap();
             res.push_str(&word[start_y..]);
             res.push_str(&word[..start_y]);
-            res.push_str(PIG_LATIN_FRAGMENT);
         }
+        res.push_str(PIG_LATIN_FRAGMENT);
         res.push(' ');
     }
     res.trim_end().to_owned()
