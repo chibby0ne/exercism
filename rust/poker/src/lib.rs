@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-// use std::collections::HashMap;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Suit {
@@ -104,26 +104,21 @@ enum Hand {
     StraightFlush(Card),
 }
 
-// impl Hand {
-//     fn new(hand: &mut [Card]) -> Vec<Self> {
-//         let mut v: Vec<Hand> = Vec::new();
-//         hand.sort_unstable();
-//         hand.reverse();
-//         let mut map_rank_to_freq: HashMap<Rank, u32> = HashMap::new();
-//         let mut map_freq_to_rank: HashMap<u32, Rank> = HashMap::new();
-//         let mut is_flush = false;
-//         if hand.iter().all(|c| c.suit == hand[0].suit) {
-//             is_flush = true;
-//         }
-//         for h in hand {
-//             *map_rank_to_freq.entry(h.rank).or_insert(0) += 1;
-//         }
-//         if map.len() == 2 {
-//         }
-
-//         v
-//     }
-// }
+fn get_hands_from_cards(hand: &mut [Card]) -> Vec<Hand> {
+    let mut v: Vec<Hand> = Vec::new();
+    hand.sort_unstable();
+    hand.reverse();
+    let mut map_rank_to_freq: HashMap<Rank, u32> = HashMap::new();
+    let mut map_freq_to_rank: HashMap<u32, Rank> = HashMap::new();
+    let mut is_flush = false;
+    if hand.iter().all(|c| c.suit == hand[0].suit) {
+        is_flush = true;
+    }
+    for h in hand {
+        *map_rank_to_freq.entry(h.rank).or_insert(0) += 1;
+    }
+    v
+}
 
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -134,50 +129,50 @@ impl PartialOrd for Hand {
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
         match (self, other) {
-            (Hand::HighCard(handVal), Hand::HighCard(otherVal)) => handVal.cmp(otherVal),
+            (Hand::HighCard(card), Hand::HighCard(other_card)) => card.cmp(other_card),
             (Hand::HighCard(_), _) => Ordering::Less,
 
-            (Hand::Pair(handVal), Hand::Pair(otherVal)) => handVal.cmp(otherVal),
+            (Hand::Pair(card), Hand::Pair(other_card)) => card.cmp(other_card),
             (Hand::Pair(_), Hand::HighCard(_)) => Ordering::Greater,
             (Hand::Pair(_), _) => Ordering::Less,
 
-            (Hand::TwoPairs(handGreaterPair, handLesserPair), Hand::TwoPairs(otherGreaterPair, otherLesserPair)) => {
-                let res = handGreaterPair.cmp(otherGreaterPair);
+            (Hand::TwoPairs(greater_pair, lesser_pair), Hand::TwoPairs(other_greater_pair, other_lesser_pair)) => {
+                let res = greater_pair.cmp(other_greater_pair);
                 if res == Ordering::Equal {
-                    return handLesserPair.cmp(otherLesserPair)
+                    return lesser_pair.cmp(other_lesser_pair)
                 }
                 res
             },
             (Hand::TwoPairs(_, _), Hand::Pair(_)|Hand::HighCard(_)) => Ordering::Greater,
             (Hand::TwoPairs(_, _), _) => Ordering::Less,
 
-            (Hand::ThreeOfAKind(handVal), Hand::ThreeOfAKind(otherVal)) => handVal.cmp(otherVal),
+            (Hand::ThreeOfAKind(card), Hand::ThreeOfAKind(other_card)) => card.cmp(other_card),
             (Hand::ThreeOfAKind(_), Hand::HighCard(_)|Hand::Pair(_)|Hand::TwoPairs(_, _)) => Ordering::Greater,
             (Hand::ThreeOfAKind(_), _) => Ordering::Less,
 
-            (Hand::Straight(handHighestCard), Hand::Straight(otherHighestCard)) => handHighestCard.cmp(otherHighestCard),
+            (Hand::Straight(highest_card), Hand::Straight(other_highest_card)) => highest_card.cmp(other_highest_card),
             (Hand::Straight(_), Hand::HighCard(_)|Hand::Pair(_)|Hand::TwoPairs(_, _)|Hand::ThreeOfAKind(_)) => Ordering::Greater,
             (Hand::Straight(_), _) => Ordering::Less,
 
-            (Hand::Flush(handHighestCard), Hand::Flush(otherHighestCard)) => handHighestCard.cmp(otherHighestCard),
-            (Hand::Flush(_), Hand::HighCard(_)|Hand::Pair(_)|Hand::TwoPairs(_, _)|Hand::ThreeOfAKind(_)|Hand::Straight(_)) => Ordering::Greater,
-            (Hand::Flush(_), _) => Ordering::Less,
+            (Hand::Flush(highest_card), Hand::Flush(other_highest_card)) => highest_card.cmp(other_highest_card),
+            (Hand::Flush(_), Hand::FullHouse(_, _)|Hand::FourOfAKind(_)|Hand::StraightFlush(_)) => Ordering::Less,
+            (Hand::Flush(_), _) => Ordering::Greater,
 
-            (Hand::FullHouse(handTriple, handPair), Hand::FullHouse(otherTriple, otherPair)) => {
-                let res = handTriple.cmp(otherTriple);
+            (Hand::FullHouse(triple, pair), Hand::FullHouse(other_triple, other_pair)) => {
+                let res = triple.cmp(other_triple);
                 if res == Ordering::Equal {
-                    return handPair.cmp(otherPair)
+                    return pair.cmp(other_pair)
                 }
                 res
             },
             (Hand::FullHouse(_, _), Hand::FourOfAKind(_)|Hand::StraightFlush(_)) => Ordering::Less,
             (Hand::FullHouse(_, _), _) => Ordering::Greater,
 
-            (Hand::FourOfAKind(handVal), Hand::FourOfAKind(otherVal)) => handVal.cmp(otherVal),
+            (Hand::FourOfAKind(card), Hand::FourOfAKind(other_card)) => card.cmp(other_card),
             (Hand::FourOfAKind(_), Hand::StraightFlush(_)) => Ordering::Less,
             (Hand::FourOfAKind(_), _) => Ordering::Greater,
 
-            (Hand::StraightFlush(handHighestCard), Hand::StraightFlush(otherHighestCard)) => handHighestCard.cmp(otherHighestCard),
+            (Hand::StraightFlush(highest_card), Hand::StraightFlush(other_highest_card)) => highest_card.cmp(other_highest_card),
             (Hand::StraightFlush(_), _) => Ordering::Greater,
         }
     }
@@ -193,7 +188,7 @@ pub struct PokerHand {
 impl PokerHand {
     fn new(hand: &str) -> Self {
         let mut cards: Vec<Card> = hand.split_whitespace().filter_map(Card::new).collect();
-        let hands = Hand::new(&mut cards);
+        let hands = get_hands_from_cards(&mut cards);
         Self {
             cards,
             hands,
